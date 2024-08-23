@@ -1,0 +1,7 @@
+name: PlaytimeLink
+version: '${version}'
+main: _1ms.playtimelink.Main
+api-version: '1.17'
+author: _1ms
+description: PlaceholderAPI support for my velocity playtime plugin.
+depend: [PlaceholderAPI]

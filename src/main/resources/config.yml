@@ -1,0 +1,6 @@
+#Velocity playtime logger placeholderAPI extension.
+Messages:
+  LOADING: "loading..."
+Data:
+  CHECK_FOR_UPDATES: true
+  BSTATS: true
