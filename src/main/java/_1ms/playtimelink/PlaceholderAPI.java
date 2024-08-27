@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class PlaceholderAPI extends PlaceholderExpansion {
 
@@ -46,6 +47,18 @@ public class PlaceholderAPI extends PlaceholderExpansion {
 
     @Override
     public String onPlaceholderRequest(@Nullable Player player, @NotNull String ID) {
+        if(ID.equals("place")) {
+            int i = 0;
+            final Set<Map.Entry<String, Long>> entryA = requestSender.getPttop().entrySet();
+            if(entryA.isEmpty())
+                return main.getLoadingMsg();
+            for(Map.Entry<String, Long> entry : entryA) {
+                i++;
+                if(entry.getKey().equalsIgnoreCase(Objects.requireNonNull(player).getName()))
+                    return String.valueOf(i);
+            }
+            return "NOT_IN_TOPLIST";
+        }
         ID = ID.substring(9);
         if(!ID.startsWith("top")) {
             final long pt = requestSender.getPlayTime(Objects.requireNonNull(player).getName());
