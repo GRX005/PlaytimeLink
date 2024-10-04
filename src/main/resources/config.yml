@@ -1,8 +1,9 @@
 #Velocity playtime logger placeholderAPI extension.
+file-version: 2
 Messages:
   LOADING: "loading..."
 Data:
   CHECK_FOR_UPDATES: true
   BSTATS: true
-#Same as in the main plugin.
+#Same as in the main plugin. ([space]'time in millisecs': cmd) (ex: '10000': say hello)
 Rewards:

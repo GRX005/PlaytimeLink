@@ -5,11 +5,12 @@ import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public final class Main extends JavaPlugin {
@@ -25,6 +26,7 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         InitInstances();
         saveDefaultConfig();
+        checkAndUpdateConfig(Paths.get(getDataFolder()+"\\config.yml"));
         requestSender.runPlaytimeUpdates();
         final boolean isUpdate = getConfig().getBoolean("Data.CHECK_FOR_UPDATES");
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
@@ -69,6 +71,22 @@ public final class Main extends JavaPlugin {
         requestSender = new RequestSender(this);
         placeholderAPI = new PlaceholderAPI(requestSender, this);
         updateHandler = new UpdateHandler(this);
+    }
+
+    public static void checkAndUpdateConfig(Path path) {
+        try {
+            final List<String> lines = Files.readAllLines(path);
+            if (lines.get(1).contains("file-version"))
+                return;
+            lines.add(1, "file-version: 2");
+
+            lines.add("#Same as in the main plugin. ([space]'time in millisecs': cmd) (ex: '10000': say hello)");
+            lines.add("Rewards:");
+
+            Files.write(path, lines);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
