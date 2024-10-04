@@ -18,7 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class RequestSender implements PluginMessageListener {
     private final Main main;
-    private HashMap<String, Long> playtime = new HashMap<>();
+    public HashMap<String, Long> playtime = new HashMap<>();
     @Getter
     private LinkedHashMap<String, Long> pttop = new LinkedHashMap<>();
     private final Random random = ThreadLocalRandom.current();
@@ -83,6 +83,15 @@ public class RequestSender implements PluginMessageListener {
             case "ptt" -> {
                 if(reqTopList)
                     pttop = gson.fromJson(in.readUTF(), typeT);
+            }
+            case "rs" -> {
+                if(!playtime.isEmpty()) {
+                    runPlaytimeUpdates();
+                    if(!pttop.isEmpty()) {
+                        startGetTL();
+                    }
+                }
+
             }
         }
     }

@@ -4,3 +4,5 @@ Messages:
 Data:
   CHECK_FOR_UPDATES: true
   BSTATS: true
+#Same as in the main plugin.
+Rewards:
