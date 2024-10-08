@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,7 +27,7 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         InitInstances();
         saveDefaultConfig();
-        checkAndUpdateConfig(Paths.get(getDataFolder()+"\\config.yml"));
+        checkAndUpdateConfig(Paths.get(getDataFolder()+ File.separator+"config.yml"));
         requestSender.runPlaytimeUpdates();
         final boolean isUpdate = getConfig().getBoolean("Data.CHECK_FOR_UPDATES");
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
