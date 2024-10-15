@@ -77,7 +77,8 @@ public class PlaceholderAPI extends PlaceholderExpansion {
                 if(ID.startsWith("name", 3)) {
                     return entry.getKey();
                 }
-                return calculatePlayTime(entry.getValue(), ID.substring(9));
+                ID = ID.substring(9);
+                return ID.startsWith("total") ? calcTotalPT(entry.getValue(), ID.substring(5)) : calculatePlayTime(entry.getValue(), ID); //%VPTlink_playtime_toptime1_totalhours%
             }
         }
         return main.getLoadingMsg();
@@ -107,26 +108,4 @@ public class PlaceholderAPI extends PlaceholderExpansion {
             default -> "ERR_INVALID_PLACEHOLDER";
         };
     }
-
-//        switch (v) {
-//            case "years" -> {
-//                return  // 1 year = 31,536,000,000 ms
-//            }
-//            case "months" -> {
-//                return String.valueOf((rawValue % 31536000000L) / 2592000000L); // 1 month = 2,628,000,000 ms
-//            }
-//            case "days" -> {
-//                return String.valueOf(((rawValue % 31536000000L) % 2592000000L) / 86400000); // 1 day = 86,400,000 ms
-//            }
-//            case "hours" -> {
-//                return String.valueOf((((rawValue % 31536000000L) % 2592000000L) % 86400000) / 3600000); // 1 hour = 3,600,000 ms
-//            }
-//            case "minutes" -> {
-//                return String.valueOf(((((rawValue % 31536000000L) % 2592000000L) % 86400000) % 3600000) / 60000); // 1 minute = 60,000 ms
-//            }
-//            case "seconds" -> {
-//                return String.valueOf((((((rawValue % 31536000000L) % 2592000000L) % 86400000) % 3600000) % 60000) / 1000); // 1 second = 1,000 ms
-//            }
-//        }
-//        return "ERR";
 }
