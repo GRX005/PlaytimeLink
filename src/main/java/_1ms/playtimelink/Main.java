@@ -22,6 +22,8 @@ public final class Main extends JavaPlugin {
     public UpdateHandler updateHandler;
     @Getter
     private final String loadingMsg = getConfig().getString("Messages.LOADING");
+    @Getter
+    private final String notfoundMsg = getConfig().getString("Messages.NOT_IN_TOPLIST");
 
     @Override
     public void onEnable() {
@@ -36,6 +38,7 @@ public final class Main extends JavaPlugin {
         if (getConfig().getBoolean("Data.BSTATS")) {
             Metrics metrics = new Metrics(this, 22917);
             metrics.addCustomChart(new SimplePie("updater", () -> String.valueOf(isUpdate)));
+            metrics.addCustomChart(new SimplePie("rewards", ()-> String.valueOf(rewardsH.size())));
         }
         getServer().getMessenger().registerIncomingPluginChannel(this, "velocity:playtime", requestSender);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "velocity:playtime");
@@ -77,13 +80,19 @@ public final class Main extends JavaPlugin {
     public static void checkAndUpdateConfig(Path path) {
         try {
             final List<String> lines = Files.readAllLines(path);
-            if (lines.get(1).contains("file-version"))
+            if(lines.get(1).contains("3"))
                 return;
-            lines.add(1, "file-version: 2");
+            if (!lines.get(1).contains("file-version")) {
+                lines.add(1, "file-version: 3");
+                lines.add(4, "  NOT_IN_TOPLIST: \"Not in toplist\"");
 
-            lines.add("#Same as in the main plugin. ([space]'time in millisecs': cmd) (ex: '10000': say hello)");
-            lines.add("Rewards:");
-
+                lines.add("#Same as in the main plugin. ([space]'time in millisecs': cmd) (ex: '10000': say hello)");
+                lines.add("Rewards:");
+            } else {
+                lines.remove(1);
+                lines.add(1, "file-version: 3");
+                lines.add(4, "  NOT_IN_TOPLIST: \"Not in toplist\"");
+            }
             Files.write(path, lines);
         } catch (IOException e) {
             throw new RuntimeException(e);

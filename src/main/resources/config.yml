@@ -1,7 +1,8 @@
 #Velocity playtime logger placeholderAPI extension.
-file-version: 2
+file-version: 3
 Messages:
   LOADING: "loading..."
+  NOT_IN_TOPLIST: "Not in toplist"
 Data:
   CHECK_FOR_UPDATES: true
   BSTATS: true
