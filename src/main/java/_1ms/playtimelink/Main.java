@@ -43,7 +43,11 @@ public final class Main extends JavaPlugin {
         getServer().getMessenger().registerIncomingPluginChannel(this, "velocity:playtime", requestSender);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "velocity:playtime");
         if (isUpdate)
-            Bukkit.getScheduler().runTaskAsynchronously(this, () -> updateHandler.checkForUpdates());
+            Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+                try {
+                    updateHandler.checkForUpdates();
+                } catch (Exception ignored) {}
+            });
         final ConfigurationSection confSec = getConfig().getConfigurationSection("Rewards");
         if (confSec != null) {
             final Set<String> set = Objects.requireNonNull(confSec).getKeys(true);

@@ -60,6 +60,7 @@ public class PlaceholderAPI extends PlaceholderExpansion {
             return main.getNotfoundMsg();
         }
         ID = ID.substring(9);
+
         if(!ID.startsWith("top")) { //%VPTlink_playtime_|hours%
             final long pt = requestSender.getPlayTime(Objects.requireNonNull(player).getName());
             if (pt == -1)
@@ -73,12 +74,27 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         }
         for (Map.Entry<String, Long> entry : requestSender.getPttop().entrySet()) {
             index++;
-            if (ID.startsWith(String.valueOf(index), 7)) {
-                if(ID.startsWith("name", 3)) {
+
+            final StringBuilder num = new StringBuilder();
+            String IDCOPY = ID.substring(7);
+
+            while (!IDCOPY.isEmpty() && Character.isDigit(IDCOPY.charAt(0))) {
+                num.append(IDCOPY.charAt(0));
+                IDCOPY = IDCOPY.substring(1); //For numbers with more than 1 digit.
+            }
+            if (num.toString().equals(String.valueOf(index))) {
+                if(ID.startsWith("name", 3))
                     return entry.getKey();
-                }
                 ID = ID.substring(9);
-                return ID.startsWith("total") ? calcTotalPT(entry.getValue(), ID.substring(5)) : calculatePlayTime(entry.getValue(), ID); //%VPTlink_playtime_toptime1_totalhours%
+                while (Character.isDigit(ID.charAt(0))) //For numbers of lenght 3 or more
+                    ID=ID.substring(1);
+                if(ID.startsWith("_"))  //For only lenght 2
+                    ID=ID.substring(1);
+                if(ID.startsWith("total")) {
+                    ID=ID.substring(5);
+                    return calcTotalPT(entry.getValue(), ID);
+                }
+                return calculatePlayTime(entry.getValue(), ID); //%VPTlink_playtime_toptime1_totalhours%
             }
         }
         return main.getLoadingMsg();
