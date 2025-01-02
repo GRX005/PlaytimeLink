@@ -48,6 +48,10 @@ public class PlaceholderAPI extends PlaceholderExpansion {
     @Override
     public String onPlaceholderRequest(@Nullable Player player, @NotNull String ID) {
         if(ID.equals("place")) {
+            if(!requestSender.isReqTopList()) { //Start the PTTOP request task if it's needed.
+                requestSender.setReqTopList(true);
+                requestSender.startGetTL();
+            }
             int i = 0;
             final Set<Map.Entry<String, Long>> entryA = requestSender.getPttop().entrySet();
             if(entryA.isEmpty())
@@ -57,7 +61,7 @@ public class PlaceholderAPI extends PlaceholderExpansion {
                 if(entry.getKey().equalsIgnoreCase(Objects.requireNonNull(player).getName()))
                     return String.valueOf(i);
             }
-            return main.getNotfoundMsg();
+            return main.getNotfoundMsg(); //Should always be found now but I'll leave it in regardless
         }
         ID = ID.substring(9);
 
@@ -68,7 +72,7 @@ public class PlaceholderAPI extends PlaceholderExpansion {
             return ID.startsWith("total") ? calcTotalPT(pt, ID.substring(5)) : calculatePlayTime(pt, ID); //%VPTlink_playtime_totalhours%
         }
         int index = 0;
-        if(!requestSender.isReqTopList()) {
+        if(!requestSender.isReqTopList()) { //Start the PTTOP request task if it's needed.
             requestSender.setReqTopList(true);
             requestSender.startGetTL();
         }
@@ -80,7 +84,7 @@ public class PlaceholderAPI extends PlaceholderExpansion {
 
             while (!IDCOPY.isEmpty() && Character.isDigit(IDCOPY.charAt(0))) {
                 num.append(IDCOPY.charAt(0));
-                IDCOPY = IDCOPY.substring(1); //For numbers with more than 1 digit.
+                IDCOPY = IDCOPY.substring(1); //For numbers with more than 1 digits.
             }
             if (num.toString().equals(String.valueOf(index))) {
                 if(ID.startsWith("name", 3))
@@ -88,7 +92,7 @@ public class PlaceholderAPI extends PlaceholderExpansion {
                 ID = ID.substring(9);
                 while (Character.isDigit(ID.charAt(0))) //For numbers of lenght 3 or more
                     ID=ID.substring(1);
-                if(ID.startsWith("_"))  //For only lenght 2
+                if(ID.startsWith("_"))  //Only for lenght 2
                     ID=ID.substring(1);
                 if(ID.startsWith("total")) {
                     ID=ID.substring(5);

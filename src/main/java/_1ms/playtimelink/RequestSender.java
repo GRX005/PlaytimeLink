@@ -36,8 +36,12 @@ public class RequestSender implements PluginMessageListener {
         this.main = main;
     }
 
-    public long getPlayTime(String name) {
-        return playtime.getOrDefault(name, -1L);
+    public long getPlayTime(String name) {//Use pttop which contains all pt if it's being used.
+        if(!reqTopList)
+            return playtime.getOrDefault(name, -1L);
+        if(!pttop.isEmpty())
+            playtime.clear();
+        return pttop.getOrDefault(name, -1L);
     }
 
     public void runPlaytimeUpdates() {
@@ -45,7 +49,7 @@ public class RequestSender implements PluginMessageListener {
             @Override
             public void run() {
                 if(!SA.isEmpty()) {
-                    requestPlaytime();
+                    sendReq("rpt");
                 }
             }
         }.runTaskTimerAsynchronously(main, 0L, 20L);
@@ -53,27 +57,17 @@ public class RequestSender implements PluginMessageListener {
     public void startGetTL() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(main, (task) -> {
             if(!SA.isEmpty()) {
-                requestToplist();
+                sendReq("rtl");
                 task.cancel();
             }
-        }, 20L ,20L);
+        }, 20L ,20L); //Needs 1s delay.
     }
 
 
-    //Request
-    private void requestPlaytime() {
+    //Request Format & Send
+    private void sendReq(String msg) {
         final ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("rpt");
-        sendMSG(out); //Try sending it to an npc!
-    }
-
-    public void requestToplist() {
-        final ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("rtl");
-        sendMSG(out);
-    }
-
-    public void sendMSG(ByteArrayDataOutput out) {
+        out.writeUTF(msg);
         new ArrayList<>(SA).get(random.nextInt(SA.size())).sendPluginMessage(main, "velocity:playtime", out.toByteArray());
     }
 
@@ -92,20 +86,18 @@ public class RequestSender implements PluginMessageListener {
                 }
                 final HashMap<String, Long> playtimes = gson.fromJson(in.readUTF(), typeI);
                 playtime.putAll(playtimes);
+
             }
             case "ptt" -> {
                 if(reqTopList)
                     pttop = gson.fromJson(in.readUTF(), typeT);
             }
             case "rs" -> {
-                final ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                out.writeUTF("cc");
-                sendMSG(out);
+                sendReq("cc");
                 if(PtTask != null && PtTask.isCancelled()) {
                     runPlaytimeUpdates();
-                    if(!pttop.isEmpty()) {
+                    if(!pttop.isEmpty())
                         startGetTL();
-                    }
                 }
             }
             case "conf" -> {

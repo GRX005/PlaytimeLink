@@ -16,7 +16,7 @@ import java.util.*;
 
 public final class Main extends JavaPlugin {
 
-    public HashMap<Long, String> rewardsH = new HashMap<>();
+    public final HashMap<Long, String> rewardsH = new HashMap<>();
     public RequestSender requestSender;
     public PlaceholderAPI placeholderAPI;
     public UpdateHandler updateHandler;
