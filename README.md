@@ -2,4 +2,6 @@
 ## An open source placeholderAPI extension for my velocity playtime plugin.
 This plugin gets playtime values from my main plugin using plugin channels, and supplies them as data for placeholders.
 
-For more info, visit the SpigotMC page of the plugin: https://www.spigotmc.org/resources/playtimelink.117413/
+Also supports data preloading, and has a rewards system that can be used to execute different local commands on each server.
+
+For more info, visit the modrinth page of the plugin: https://modrinth.com/plugin/playtimelink
