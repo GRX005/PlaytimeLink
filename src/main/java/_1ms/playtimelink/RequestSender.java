@@ -95,7 +95,7 @@ public class RequestSender implements PluginMessageListener {
             }
             case "rs" -> {//restart(proxy restarted)
                 sendReq("cc"); //confirm
-                if(PtTask != null && PtTask.isCancelled()) {
+                if(PtTask != null && !Bukkit.getScheduler().isCurrentlyRunning(PtTask.getTaskId())) {
                     runPlaytimeUpdates();
                     if(!pttop.isEmpty())
                         startGetTL();
