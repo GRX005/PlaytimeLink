@@ -79,7 +79,6 @@ public final class Main extends JavaPlugin {
             }, 0, 20);
         }
 
-
         getLogger().info("PlaytimeLink has been loaded.");
     }
 

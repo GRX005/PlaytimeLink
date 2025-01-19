@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
@@ -21,7 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class RequestSender implements PluginMessageListener {
     private final Main main;
     public boolean isPreloaded;
-    private BukkitTask PtTask;
+    private int PtTaskID = -1;
     @Getter
     private HashMap<String, Long> playtime = new HashMap<>();
     @Getter
@@ -46,22 +45,25 @@ public class RequestSender implements PluginMessageListener {
     }
 
     public void runPlaytimeUpdates() {
-        PtTask = new BukkitRunnable() {
+        PtTaskID = new BukkitRunnable() {
             @Override
             public void run() {
                 if(!SA.isEmpty()) {
                     sendReq("rpt");
                 }
             }
-        }.runTaskTimerAsynchronously(main, 0L, 20L);
+        }.runTaskTimerAsynchronously(main, 0L, 20L).getTaskId();
     }
     public void startGetTL() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(main, (task) -> {
-            if(!SA.isEmpty()) {
-                sendReq("rtl");
-                task.cancel();
+        new BukkitRunnable() {
+            @Override
+            public void run() { //1.8 comp.
+                if(!SA.isEmpty()) {
+                    sendReq("rtl");
+                    this.cancel();
+                }
             }
-        }, 20L ,20L); //Needs 1s delay.
+        }.runTaskTimerAsynchronously(main, 20L, 20L); //Needs 1s delay.
     }
 
 
@@ -87,7 +89,6 @@ public class RequestSender implements PluginMessageListener {
                 }
                 final HashMap<String, Long> playtimes = gson.fromJson(in.readUTF(), typeI);
                 playtime.putAll(playtimes);
-
             }
             case "ptt" -> {
                 if(reqTopList)
@@ -95,7 +96,7 @@ public class RequestSender implements PluginMessageListener {
             }
             case "rs" -> {//restart(proxy restarted)
                 sendReq("cc"); //confirm
-                if(PtTask != null && !Bukkit.getScheduler().isCurrentlyRunning(PtTask.getTaskId())) {
+                if(PtTaskID != -1 && !Bukkit.getScheduler().isCurrentlyRunning(PtTaskID)) {
                     runPlaytimeUpdates();
                     if(!pttop.isEmpty())
                         startGetTL();
@@ -103,7 +104,7 @@ public class RequestSender implements PluginMessageListener {
             }
             case "conf" -> { //confirmation that the syncing started
                 isPreloaded = in.readBoolean();
-                PtTask.cancel();
+                Bukkit.getScheduler().cancelTask(PtTaskID);
             }
         }
     }
