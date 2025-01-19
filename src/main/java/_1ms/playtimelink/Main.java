@@ -12,7 +12,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public final class Main extends JavaPlugin {
 
@@ -51,26 +54,31 @@ public final class Main extends JavaPlugin {
         final ConfigurationSection confSec = getConfig().getConfigurationSection("Rewards");
         if (confSec != null) {
             final Set<String> set = Objects.requireNonNull(confSec).getKeys(true);
-            set.iterator().forEachRemaining(key -> rewardsH.put(Long.valueOf(key), getConfig().getString("Rewards." + key)));
+            set.iterator().forEachRemaining(key ->
+                    rewardsH.put(Long.valueOf(key), getConfig().getString("Rewards." + key))
+            );
+
             Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-                final List<String> commandsToExecute = new ArrayList<>();
-                rewardsH.keySet().forEach(key ->
-                        requestSender.playtime.values().forEach(val -> {
-                            if (Objects.equals(key, val)) {
-                                commandsToExecute.add(rewardsH.get(key));
-                            }
-                        })
-                );
-                if (!commandsToExecute.isEmpty()) {
+                final HashMap<String, String> cmdAndPlayer = new HashMap<>();
+
+                rewardsH.forEach((key, command) -> {
+                    final HashMap<String, Long> hashToUse = requestSender.isReqTopList() ? requestSender.getPttop() : requestSender.getPlaytime();
+                    hashToUse.forEach((player, val) -> {
+                        try {
+                            if(!Objects.requireNonNull(Bukkit.getPlayer(player)).isPermissionSet("vptlink.rewards.exempt") && Objects.equals(key, val))
+                                cmdAndPlayer.put(command, player);
+                        } catch (Exception ignored) {}
+                    });
+                });
+
+                if (!cmdAndPlayer.isEmpty()) {
                     Bukkit.getScheduler().runTask(this, () ->
-                            commandsToExecute.forEach(command ->
-                                    Bukkit.dispatchCommand(getServer().getConsoleSender(), command)
-                            )
+                            cmdAndPlayer.forEach((key, value) -> Bukkit.dispatchCommand(getServer().getConsoleSender(), key.replace("%player%", value)))
                     );
                 }
             }, 0, 20);
-
         }
+
 
         getLogger().info("PlaytimeLink has been loaded.");
     }
